@@ -40,10 +40,9 @@ public class AlunoController {
         alunoService.deletarAlunoPorId(id);
     }
 
-    // Novo método para atualizar aluno
-//    @PutMapping("/{id}")
-//    @ResponseStatus(HttpStatus.OK)
-//    public Aluno atualizarAluno(@PathVariable Long id, @RequestBody Aluno alunoAtualizado) {
-//        return alunoService.atualizarAluno(id, alunoAtualizado);
-//    }
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void atualizarAlunoPorId(@PathVariable Long id, @RequestBody Aluno aluno) {
+        alunoService.atualizarAlunoPorId(id, aluno);
+    }
 }

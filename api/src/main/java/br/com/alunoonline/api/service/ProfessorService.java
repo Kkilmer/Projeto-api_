@@ -1,7 +1,7 @@
 package br.com.alunoonline.api.service;
 
-import br.com.alunoonline.api.model.Aluno;
-import br.com.alunoonline.api.repository.AlunoRepository;
+import br.com.alunoonline.api.model.Professor;
+import br.com.alunoonline.api.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,30 +11,30 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AlunoService {
+public class ProfessorService {
 
     @Autowired
-    AlunoRepository alunoRepository;
+    ProfessorRepository professorRepository;
 
-    public void criarAluno(Aluno aluno) {
-        alunoRepository.save(aluno);
+    public void criarProfessor(Professor professor){
+        professorRepository.save(professor);
     }
 
-    public List<Aluno> listarTodosAlunos() {
-        return alunoRepository.findAll();
+    public List<Professor> listarTodosProfessor() {
+        return professorRepository.findAll();
     }
 
-    public Optional<Aluno> buscarAlunoPorId(Long id) {
-        return alunoRepository.findById(id);
+    public Optional<Professor> buscarAProfessorPorId(Long id) {
+        return professorRepository.findById(id);
     }
 
     public void deletarAlunoPorId(Long id) {
-        alunoRepository.deleteById(id);
+        professorRepository.deleteById(id);
     }
 
-    public void atualizarAlunoPorId(Long id, Aluno aluno) {
+    public void atualizarAlunoPorId(Long id, Professor aluno) {
         // PRIMEIRO PASSO: VER SE O ALUNO EXISTE NO BD
-        Optional<Aluno> alunoDoBancoDeDados = buscarAlunoPorId(id);
+        Optional<Professor> alunoDoBancoDeDados = buscarAProfessorPorId(id);
 
         // E SE NÃO EXISTIR??
         if (alunoDoBancoDeDados.isEmpty()) {
@@ -43,17 +43,17 @@ public class AlunoService {
 
         // SE CHEGAR AQUI, SIGNIFICA QUE EXITE ALUNO! ENTÃO
         // VOU ARMEZENA-LO EM UMA VARIAVEL
-        Aluno alunoEditado = alunoDoBancoDeDados.get();
+        Professor professorEditado = alunoDoBancoDeDados.get();
 
         // COM ESSE ALUNO EDITADO DE CIMA, FAÇO
         // OS SETS NECESSÁRIOS PARA ATUALIZAR OS ATRIBUTOS DELE.
-        alunoEditado.setNome(aluno.getNome());
-        alunoEditado.setCpf(aluno.getCpf());
-        alunoEditado.setEmail(aluno.getEmail());
+        professorEditado.setNome(aluno.getNome());
+        professorEditado.setCpf(aluno.getCpf());
+        professorEditado.setEmail(aluno.getEmail());
 
         // COM O ALUNO TOTALMENTE EDITADO ACIMA
         // EU DEVOLVO ELE EDITADO/ATUALIZADO PARA O BANCO DE DADOS
-        alunoRepository.save(alunoEditado);
+        professorRepository.save(professorEditado);
 
     }
 }
