@@ -1,9 +1,11 @@
 package br.com.alunoonline.api.infra.security;
 
-import br.com.alunoonline.api.domain.user.User;
+import br.com.alunoonline.api.model.Usuario;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,38 +15,47 @@ import java.time.ZoneOffset;
 
 @Service
 public class TokenService {
+
     @Value("${api.security.token.secret}")
     private String secret;
 
-    public String gerarToken(User user) {
+
+    public String gerarToken(Usuario usuario) {
+
+        //se for valido, retorna o login do usuario
+        //se for invalido ou expirado, lança a exceção
+
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            String token = JWT.create()
-                    .withIssuer("auth-api")
-                    .withSubject(user.getLogin())
-                    .withExpiresAt(genExpirationDate())
-                    .sign(algorithm);
-            return token;
+            var algoritmo  = Algorithm.HMAC256(secret);
+            return JWT.create()
+                    .withIssuer("API Voll.med")//define quem criou o token
+                    .withSubject(usuario.getLogin())//login -> user
+                    .withExpiresAt(dataExpiracao())//dafine a validade
+                    .sign(algoritmo);
         } catch (JWTCreationException exception){
-            throw new RuntimeException("Error while generating token", exception);
+            throw  new RuntimeException(
+                    "Erro ao gerar o token jwt ", exception);
         }
     }
 
-    public String validacaoToken(String token) {
+    public String getSubject(String tokenJWT) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.require(algorithm)
-                    .withIssuer("auth-api")
+            var algoritmo = Algorithm.HMAC256(secret);
+            return JWT.require(algoritmo)
+                    .withIssuer("API Voll.med")
                     .build()
-                    .verify(token)
+                    .verify(tokenJWT)
                     .getSubject();
-
-        } catch (JWTCreationException exception){
-            return "";
+        } catch (JWTVerificationException exception) {
+            exception.printStackTrace();
+            throw new RuntimeException("Token JWT inválido ou expirado!");
         }
     }
 
-    private Instant genExpirationDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    private Instant dataExpiracao() {
+        return LocalDateTime.now().plusYears(1).
+                toInstant(ZoneOffset.of("-03:00"));
     }
+
+
 }
